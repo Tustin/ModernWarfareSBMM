@@ -161,6 +161,13 @@ namespace ModernWarfareSBMM
                     {
                         foreach (var result in results)
                         {
+                            var noIdentifier = result.Username.Split('#')[0];
+                            if (!noIdentifier.Equals(user.Username, StringComparison.CurrentCulture))
+                            {
+                                Console.WriteLine($"{noIdentifier} doesnt match {user.Username}");
+                                continue;
+                            }
+
                             var stats = await GetProfile(result.Username);
 
                             if (stats == default)
