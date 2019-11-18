@@ -149,7 +149,7 @@ namespace ModernWarfareSBMM
 
                     if (unoUser == default)
                     {
-                        Console.WriteLine($"Unable to find result for {user.Username}");
+                        //Console.WriteLine($"Unable to find result for {user.Username}");
                         continue;
                     }
 

@@ -9,3 +9,7 @@ The purpose of this tool is to use optical character recognition (OCR) to detect
 ## Usage
 
 tba
+
+## Example
+
+![Stats](https://i.imgur.com/vujujW4.png)
