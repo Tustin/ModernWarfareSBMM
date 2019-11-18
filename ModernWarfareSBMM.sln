@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29509.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModernWarfareSBMM", "ModernWarfareSBMM\ModernWarfareSBMM.csproj", "{902D110C-8756-457C-826D-EB8E75FA50D9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{902D110C-8756-457C-826D-EB8E75FA50D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{902D110C-8756-457C-826D-EB8E75FA50D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{902D110C-8756-457C-826D-EB8E75FA50D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{902D110C-8756-457C-826D-EB8E75FA50D9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {95D52A84-8793-4A0B-97ED-158A5ED9535B}
+	EndGlobalSection
+EndGlobal
