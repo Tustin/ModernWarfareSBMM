@@ -1,4 +1,5 @@
 ﻿using Google.Cloud.Vision.V1;
+using ModernWarfareSBMM.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -12,6 +13,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using static Google.Cloud.Vision.V1.TextAnnotation.Types;
 
 namespace ModernWarfareSBMM
@@ -114,9 +116,7 @@ namespace ModernWarfareSBMM
                                     }
                                 }
 
-                                var lastSymbol = word.Symbols.LastOrDefault();
-
-                                lastBreakingChar = lastSymbol?.Property?.DetectedBreak ?? default;
+                                lastBreakingChar = word.Symbols.LastOrDefault()?.Property?.DetectedBreak;
                             }
                         }
 
@@ -134,6 +134,73 @@ namespace ModernWarfareSBMM
 
                 Console.WriteLine($"Found {users.Count} users");
                 users.ForEach(a => Console.WriteLine($"\t{a.Rank} {a.Username}"));
+
+                foreach (var user in users)
+                {
+                    var results = await SearchUsername(user.Username);
+
+                    if (results == default)
+                    {
+                        Console.WriteLine($"Unable to find result for {user.Username}");
+                        continue;
+                    }
+
+                    UnoUserModel unoUser = results.FirstOrDefault();
+
+                    if (unoUser == default)
+                    {
+                        Console.WriteLine($"Unable to find result for {user.Username}");
+                        continue;
+                    }
+
+                    if (results.Count == 1)
+                    {
+                        user.SetProfile(await GetProfile(unoUser.Username));
+                    }
+                    else
+                    {
+                        foreach (var result in results)
+                        {
+                            var stats = await GetProfile(result.Username);
+
+                            if (stats == default)
+                            {
+                                Console.WriteLine($"No stats found for {result.Username}");
+                                continue;
+                            }
+
+                            // Not the user.
+                            if (stats.Level < user.Rank)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                // This needs some more work.
+                                unoUser = result;
+                                user.SetProfile(stats);
+                                if (stats.Level == user.Rank)
+                                {
+                                    Console.WriteLine("Found user with exact level");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (user.Profile == default)
+                    {
+                        Console.WriteLine($"Couldn't find a user with the same level or higher for {user.Username}");
+                        continue;
+                    }
+
+                    Console.WriteLine($"{user.Username} stats");
+                    Console.WriteLine($"\tRank: {user.Profile.Level}");
+                    Console.WriteLine($"\tKill/Death Ratio: {Math.Round(user.Profile.Lifetime.All.Properties["kdRatio"], 2)}");
+                    Console.WriteLine($"\tWin/Loss Ratio: {Math.Round(user.Profile.Lifetime.All.Properties["winLossRatio"], 2)}");
+                    Console.WriteLine($"\tAccuracy: {user.Profile.Lifetime.All.Properties["accuracy"].ToString("0.00")}");
+                    Console.WriteLine($"\tSPM: {Math.Round(user.Profile.Lifetime.All.Properties["scorePerMinute"], 2)}");
+                }
             }
             catch (Exception ex)
             {
@@ -142,6 +209,47 @@ namespace ModernWarfareSBMM
 
             Console.ReadLine();
         }
+
+        static async Task<List<UnoUserModel>> SearchUsername(string searchTerm)
+        {
+            var encoded = HttpUtility.UrlEncode(searchTerm);
+            var response = await httpClient.GetAsync($"https://www.callofduty.com/api/papi-client/crm/cod/v2/platform/uno/username/{encoded}/search");
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                return default;
+            }
+
+            var data = JsonConvert.DeserializeObject<UnoSearchResponseModel>(await response.Content.ReadAsStringAsync());
+
+            if (data.Status != "success")
+            {
+                return default;
+            }
+
+            return data.Data;
+        }
+
+        static async Task<ModernWarfareProfileModel> GetProfile(string uno)
+        {
+            var encoded = HttpUtility.UrlEncode(uno);
+            var response = await httpClient.GetAsync($"https://www.callofduty.com/api/papi-client/stats/cod/v1/title/mw/platform/uno/gamer/{encoded}/profile/type/mp?locale=en");
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                return default;
+            }
+
+            var data = JsonConvert.DeserializeObject<ModernWarfareProfileResponseModel>(await response.Content.ReadAsStringAsync());
+
+            if (data.Status != "success")
+            {
+                return default;
+            }
+
+            return data.Data;
+        }
+
 
         static async Task CodAuthenticatorAsync()
         {

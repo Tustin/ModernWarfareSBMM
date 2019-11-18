@@ -3,12 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModernWarfareSBMM
+namespace ModernWarfareSBMM.Model
 {
     public class UserModel
     {
         public short Rank { get; private set; }
         public string Username { get; private set; }
+        public ModernWarfareProfileModel Profile { get; private set; }
 
         public Block Block { get; private set; }
 
@@ -31,6 +32,11 @@ namespace ModernWarfareSBMM
         public void AppendToUsername(string piece)
         {
             this.Username += $" {piece}";
+        }
+
+        public void SetProfile(ModernWarfareProfileModel profile)
+        {
+            this.Profile = profile;
         }
 
         public bool IsComplete()
