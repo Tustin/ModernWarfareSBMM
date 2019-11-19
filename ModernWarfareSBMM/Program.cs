@@ -28,6 +28,20 @@ namespace ModernWarfareSBMM
         {
             try
             {
+                if (args.Length != 1)
+                {
+                    Console.WriteLine("Missing image");
+                    return;
+                }
+
+                var imageFile = args[0];
+
+                if (!File.Exists(imageFile))
+                {
+                    Console.WriteLine("Image file doesn't exist");
+                    return;
+                }
+
                 await CodAuthenticatorAsync();
 
                 Console.WriteLine("Logged in");
@@ -36,7 +50,7 @@ namespace ModernWarfareSBMM
 
                 ImageAnnotatorClient client = ImageAnnotatorClient.Create();
 
-                var image = Image.FromFile("scoreboard.png");
+                var image = Image.FromFile(imageFile);
                 TextAnnotation text = client.DetectDocumentText(image);
                 foreach (var page in text.Pages)
                 {

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ModernWarfareSBMM": {
+      "commandName": "Project",
+      "commandLineArgs": "scoreboard.png"
+    }
+  }
+}
